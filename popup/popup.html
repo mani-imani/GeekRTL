@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <title>GeekRTL</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;700&display=swap');
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      width: 300px;
+      background: #0d0d14;
+      color: #e0e0f0;
+      font-family: 'Vazirmatn', Tahoma, sans-serif;
+      direction: rtl;
+      overflow: hidden;
+    }
+
+    /* ── Hero Header ── */
+    .hero {
+      position: relative;
+      padding: 22px 20px 18px;
+      background: linear-gradient(160deg, #1a1030 0%, #0f0a20 100%);
+      border-bottom: 1px solid #ffffff0d;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      overflow: hidden;
+    }
+
+    /* glow behind icon */
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -20px;
+      right: -20px;
+      width: 120px;
+      height: 120px;
+      background: radial-gradient(circle, #7c3aed44 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      overflow: hidden;
+      flex-shrink: 0;
+      box-shadow: 0 4px 20px #7c3aed55;
+    }
+
+    .hero-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .hero-text {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .hero-title {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      line-height: 1;
+    }
+
+    .hero-title span {
+      color: #a78bfa;
+    }
+
+    .hero-subtitle {
+      font-size: 11px;
+      color: #cccccc;
+      font-weight: 400;
+      letter-spacing: 0.5px;
+    }
+
+    /* ── Toggle Row ── */
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid #ffffff08;
+    }
+
+    .toggle-info strong {
+      display: block;
+      font-size: 13px;
+      color: #ddd;
+      margin-bottom: 3px;
+    }
+
+    .toggle-info small {
+      font-size: 11px;
+      color: #cccccc;
+    }
+
+    /* switch */
+    .switch {
+      position: relative;
+      width: 46px;
+      height: 26px;
+      flex-shrink: 0;
+    }
+    .switch input { display: none; }
+    .slider {
+      position: absolute;
+      inset: 0;
+      background: #1e1e30;
+      border-radius: 26px;
+      cursor: pointer;
+      border: 1px solid #ffffff10;
+      transition: background 0.25s, border-color 0.25s;
+    }
+    .slider::before {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      right: 2px;
+      top: 2px;
+      background: #3a3a55;
+      border-radius: 50%;
+      transition: transform 0.25s, background 0.25s;
+    }
+    input:checked + .slider {
+      background: #5b21b6;
+      border-color: #7c3aed44;
+    }
+    input:checked + .slider::before {
+      background: #fff;
+      transform: translateX(-20px);
+    }
+
+    /* ── Status ── */
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 9px 20px;
+      font-size: 11px;
+      color: #5b21b6;
+      border-bottom: 1px solid #ffffff06;
+    }
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 6px #22c55e88;
+      flex-shrink: 0;
+      transition: background 0.3s, box-shadow 0.3s;
+    }
+    .dot.off {
+      background: #2a2a40;
+      box-shadow: none;
+    }
+
+    /* ── Sites ── */
+    .sites {
+      padding: 14px 20px;
+      border-bottom: 1px solid #ffffff06;
+    }
+    .sites-label {
+      font-size: 10px;
+      color: #cccccc;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .sites-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .tag {
+      background: #13131f;
+      border: 1px solid #ffffff0d;
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 11px;
+      color: #7c3aed;
+    }
+
+    /* ── Footer ── */
+    .footer {
+      padding: 10px 20px 14px;
+      display: flex;
+      justify-content: center;
+    }
+    .footer a {
+      font-size: 11px;
+      color: #ddd;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer a:hover { color: #7c3aed; }
+  </style>
+</head>
+<body>
+
+  <div class="hero">
+    <div class="hero-icon">
+      <img src="../icons/icon128.png" alt="GeekRTL" />
+    </div>
+    <div class="hero-text">
+      <div class="hero-title">Geek<span>RTL</span></div>
+      <div class="hero-subtitle">Persian RTL Fix . by GeekMani</div>
+    </div>
+  </div>
+
+  <div class="toggle-row">
+    <div class="toggle-info">
+      <strong>فعال‌سازی افزونه</strong>
+      <small>تصحیح خودکار متن فارسی در AI</small>
+    </div>
+    <label class="switch">
+      <input type="checkbox" id="toggleBtn" />
+      <span class="slider"></span>
+    </label>
+  </div>
+
+  <div class="status">
+    <span class="dot" id="dot"></span>
+    <span id="statusText">در حال بارگذاری...</span>
+  </div>
+
+  <div class="sites">
+    <div class="sites-label">پلتفرم‌های پشتیبانی‌شده</div>
+    <div class="sites-grid">
+      <span class="tag">Claude</span>
+      <span class="tag">ChatGPT</span>
+      <span class="tag">DeepSeek</span>
+      <span class="tag">Gemini</span>
+      <span class="tag">Copilot</span>
+      <span class="tag">Grok</span>
+    </div>
+  </div>
+
+  <div class="footer">
+    <a href="https://github.com/mani-imani/GeekRTL" target="_blank">github.com/mani-imani/GeekRTL</a>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

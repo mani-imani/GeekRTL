@@ -1,0 +1,46 @@
+/* GeekRTL — Styles */
+
+.geekrtl-rtl {
+  direction: rtl !important;
+  text-align: right !important;
+  font-family: "Vazirmatn", "Tahoma", "Arial", sans-serif !important;
+  line-height: 1.9 !important;
+  unicode-bidi: embed;
+}
+
+.geekrtl-auto {
+  direction: auto !important;
+  unicode-bidi: plaintext;
+  font-family: "Vazirmatn", "Tahoma", "Arial", sans-serif !important;
+  line-height: 1.9 !important;
+}
+
+/* Fix list alignment for RTL */
+.geekrtl-rtl ul,
+.geekrtl-rtl ol {
+  padding-right: 1.5em !important;
+  padding-left: 0 !important;
+}
+
+.geekrtl-rtl li {
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+/* Code blocks stay LTR */
+.geekrtl-rtl pre,
+.geekrtl-rtl code,
+.geekrtl-auto pre,
+.geekrtl-auto code {
+  direction: ltr !important;
+  text-align: left !important;
+  font-family: "Fira Code", "Consolas", monospace !important;
+  unicode-bidi: embed;
+}
+
+/* Mixed inline content */
+.geekrtl-rtl p[dir="ltr"],
+.geekrtl-auto p[dir="ltr"] {
+  direction: ltr !important;
+  text-align: left !important;
+}

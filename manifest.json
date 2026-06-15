@@ -1,0 +1,50 @@
+{
+  "manifest_version": 3,
+  "name": "GeekRTL",
+  "version": "1.0.0",
+  "description": "RTL fix for Persian/Arabic text on AI chat platforms — by GeekMani",
+  "author": "GeekMani",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "permissions": ["storage", "activeTab"],
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png"
+    }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["sites/sites.json"],
+      "matches": [
+        "https://claude.ai/*",
+        "https://chatgpt.com/*",
+        "https://chat.openai.com/*",
+        "https://chat.deepseek.com/*",
+        "https://gemini.google.com/*",
+        "https://copilot.microsoft.com/*",
+        "https://grok.com/*"
+      ]
+    }
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://claude.ai/*",
+        "https://chatgpt.com/*",
+        "https://chat.openai.com/*",
+        "https://chat.deepseek.com/*",
+        "https://gemini.google.com/*",
+        "https://copilot.microsoft.com/*",
+        "https://grok.com/*"
+      ],
+      "js": ["content/rtl-fixer.js"],
+      "css": ["content/styles.css"],
+      "run_at": "document_idle"
+    }
+  ]
+}

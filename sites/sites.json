@@ -1,0 +1,55 @@
+{
+  "sites": [
+    {
+      "name": "Claude",
+      "host": "claude.ai",
+      "selectors": [
+        ".font-claude-message",
+        "[data-is-streaming]",
+        ".prose"
+      ]
+    },
+    {
+      "name": "ChatGPT",
+      "host": "chatgpt.com",
+      "selectors": [
+        ".markdown",
+        "[data-message-author-role] .whitespace-pre-wrap",
+        ".text-message"
+      ]
+    },
+    {
+      "name": "DeepSeek",
+      "host": "chat.deepseek.com",
+      "selectors": [
+        ".ds-markdown",
+        ".chat-message-content"
+      ]
+    },
+    {
+      "name": "Gemini",
+      "host": "gemini.google.com",
+      "selectors": [
+        ".response-content",
+        "message-content",
+        ".model-response-text"
+      ]
+    },
+    {
+      "name": "Copilot",
+      "host": "copilot.microsoft.com",
+      "selectors": [
+        ".ac-textBlock",
+        "cib-message-group"
+      ]
+    },
+    {
+      "name": "Grok",
+      "host": "grok.com",
+      "selectors": [
+        ".message-bubble",
+        ".prose"
+      ]
+    }
+  ]
+}
