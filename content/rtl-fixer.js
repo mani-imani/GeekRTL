@@ -8,13 +8,17 @@
 
   // Load sites config
   let siteSelectors = [];
+  let inputSelectors = [];
   try {
     const url = chrome.runtime.getURL("sites/sites.json");
     const res = await fetch(url);
     const data = await res.json();
     const host = location.hostname;
     const site = data.sites.find((s) => host.includes(s.host));
-    if (site) siteSelectors = site.selectors;
+    if (site) {
+      siteSelectors = site.selectors;
+      inputSelectors = site.inputSelectors || [];
+    }
   } catch (e) {
     console.warn("[GeekRTL] Could not load sites.json", e);
   }
@@ -73,6 +77,46 @@
     });
   }
 
+  // ── Input/Textarea RTL fixer ──────────────────────────────
+  function fixInput(el) {
+    el.addEventListener("input", () => {
+      const text = el.value || el.innerText || el.textContent || "";
+      if (!text.trim()) {
+        el.setAttribute("dir", "auto");
+        return;
+      }
+      const ratio = getRTLRatio(text);
+      if (ratio >= MIN_RTL_RATIO) {
+        el.setAttribute("dir", "rtl");
+      } else {
+        el.setAttribute("dir", "ltr");
+      }
+    });
+    // Set initial dir on attach
+    el.setAttribute("dir", "auto");
+  }
+
+  function attachInputFixers() {
+    if (!inputSelectors.length) return;
+    inputSelectors.forEach((sel) => {
+      try {
+        document.querySelectorAll(sel).forEach((el) => {
+          if (!el.dataset.geekrtlInput) {
+            el.dataset.geekrtlInput = "1";
+            fixInput(el);
+          }
+        });
+      } catch (_) {}
+    });
+  }
+
+  function removeInputFixes() {
+    document.querySelectorAll("[data-geekrtl-input]").forEach((el) => {
+      el.removeAttribute("dir");
+      delete el.dataset.geekrtlInput;
+    });
+  }
+
   // ── Scan all matched elements ─────────────────────────────
   function scanAll() {
     if (!siteSelectors.length) return;
@@ -98,6 +142,19 @@
           siteSelectors.forEach((sel) => {
             try {
               node.querySelectorAll?.(sel).forEach(fixElement);
+            } catch (_) {}
+          });
+          // Check for new input elements
+          inputSelectors.forEach((sel) => {
+            try {
+              const inputs = node.matches?.(sel) ? [node] : [];
+              const childInputs = node.querySelectorAll?.(sel) || [];
+              [...inputs, ...childInputs].forEach((el) => {
+                if (!el.dataset.geekrtlInput) {
+                  el.dataset.geekrtlInput = "1";
+                  fixInput(el);
+                }
+              });
             } catch (_) {}
           });
         }
@@ -149,10 +206,12 @@
     if (msg.type === "GEEKRTL_TOGGLE") {
       if (msg.enabled) {
         scanAll();
+        attachInputFixers();
         startObserver();
       } else {
         stopObserver();
         removeAllFixes();
+        removeInputFixes();
       }
     }
   });
@@ -163,6 +222,7 @@
     // Wait a moment for the page to render initial messages
     setTimeout(() => {
       scanAll();
+      attachInputFixers();
       startObserver();
     }, 1200);
   }

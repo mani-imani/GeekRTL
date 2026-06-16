@@ -7,6 +7,10 @@
         ".font-claude-message",
         "[data-is-streaming]",
         ".prose"
+      ],
+      "inputSelectors": [
+        "div[contenteditable='true']",
+        "textarea"
       ]
     },
     {
@@ -16,6 +20,10 @@
         ".markdown",
         "[data-message-author-role] .whitespace-pre-wrap",
         ".text-message"
+      ],
+      "inputSelectors": [
+        "div[contenteditable='true']",
+        "textarea"
       ]
     },
     {
@@ -24,6 +32,10 @@
       "selectors": [
         ".ds-markdown",
         ".chat-message-content"
+      ],
+      "inputSelectors": [
+        "textarea",
+        "div[contenteditable='true']"
       ]
     },
     {
@@ -33,6 +45,10 @@
         ".response-content",
         "message-content",
         ".model-response-text"
+      ],
+      "inputSelectors": [
+        "div[contenteditable='true']",
+        "rich-textarea"
       ]
     },
     {
@@ -41,6 +57,10 @@
       "selectors": [
         ".ac-textBlock",
         "cib-message-group"
+      ],
+      "inputSelectors": [
+        "textarea",
+        "div[contenteditable='true']"
       ]
     },
     {
@@ -49,6 +69,10 @@
       "selectors": [
         ".message-bubble",
         ".prose"
+      ],
+      "inputSelectors": [
+        "textarea",
+        "div[contenteditable='true']"
       ]
     }
   ]

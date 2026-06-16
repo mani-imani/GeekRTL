@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "GeekRTL",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "RTL fix for Persian/Arabic text on AI chat platforms — by GeekMani",
   "author": "GeekMani",
   "icons": {
