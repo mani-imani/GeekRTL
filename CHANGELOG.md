@@ -9,6 +9,7 @@
 - Fixed: the prompt box kept changing direction after the extension was turned off.
 - Fixed: a message that started in Persian and continued in English kept its old direction.
 - Toolbar icons are PNG, as Chrome requires.
+- Product page in `docs/` (Persian and English) and an MIT `LICENSE` file.
 
 ## v1.1.0 · Jun 2026
 - Real-time direction for the prompt box (Persian → right-to-left, English → left-to-right).

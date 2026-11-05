@@ -7,6 +7,7 @@
 <p align="center">A Chrome extension that shows Persian and Arabic text right-to-left on AI chat platforms.</p>
 <p align="center" dir="rtl">افزونه‌ی کروم برای نمایش درست و راست‌به‌چپ متن فارسی و عربی در چت‌بات‌های هوش مصنوعی.</p>
 
+<p align="center"><a href="https://mani-imani.github.io/GeekRTL/"><b>mani-imani.github.io/GeekRTL</b></a></p>
 <p align="center"><a href="#english">English</a> · <a href="#فارسی">فارسی</a> · <code>v2.0.0</code></p>
 
 ---
@@ -51,11 +52,15 @@ GeekRTL/
 ├── popup/               popup.html, popup.js
 ├── css/geek.css         GeekMani design system (shared by every Geek product)
 ├── fonts/               Vazirmatn, JetBrains Mono (OFL)
-└── icons/               icon and wordmark
+├── icons/               icon and wordmark
+└── docs/                product page (GitHub Pages)
 ```
 
 ### Version
 `v2.0.0` · see [CHANGELOG.md](CHANGELOG.md).
+
+### License
+MIT, see [LICENSE](LICENSE). Fonts under the SIL OFL; product-page icons from Bootstrap Icons (MIT).
 
 ---
 
@@ -101,13 +106,17 @@ GeekRTL/
 ├── popup/               پنجره‌ی افزونه
 ├── css/geek.css         سیستم طراحی GeekMani
 ├── fonts/               Vazirmatn و JetBrains Mono (مجوز OFL)
-└── icons/               آیکون و wordmark
+├── icons/               آیکون و wordmark
+└── docs/                صفحه‌ی محصول (GitHub Pages)
 ```
 
 </div>
 
 ### نسخه
 <code dir="ltr">v2.0.0</code> · تاریخچه در [CHANGELOG.md](CHANGELOG.md).
+
+### مجوز
+<bdi>MIT</bdi>؛ فایل [LICENSE](LICENSE) را ببینید. فونت‌ها مجوز <bdi>SIL OFL</bdi> و آیکون‌های صفحه‌ی محصول مجوز <bdi>MIT</bdi> دارند.
 
 </div>
 
