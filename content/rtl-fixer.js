@@ -1,20 +1,20 @@
-// GeekRTL — RTL Fixer for AI Platforms
-// by GeekMani | github.com/mani-imani
+// GeekRTL v2 · RTL fixer for AI chat platforms
+// by GeekMani · github.com/mani-imani
 
 (async () => {
   // ── Config ────────────────────────────────────────────────
-  const PERSIAN_ARABIC_REGEX = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]/;
-  const MIN_RTL_RATIO = 0.3; // if 30%+ of chars are RTL → treat as RTL
+  const PERSIAN_ARABIC_REGEX = /[؀-ۿݐ-ݿࢠ-ࣿ]/;
+  const MIN_RTL_RATIO = 0.3; // 30%+ RTL letters → treat the block as RTL
+  const CHILD_TAGS = "p, li, blockquote, h1, h2, h3, h4, h5, h6";
 
-  // Load sites config
+  // Load this site's selectors from sites/sites.json
   let siteSelectors = [];
   let inputSelectors = [];
   try {
-    const url = chrome.runtime.getURL("sites/sites.json");
-    const res = await fetch(url);
+    const res = await fetch(chrome.runtime.getURL("sites/sites.json"));
     const data = await res.json();
     const host = location.hostname;
-    const site = data.sites.find((s) => host.includes(s.host));
+    const site = data.sites.find((s) => host === s.host || host.endsWith("." + s.host));
     if (site) {
       siteSelectors = site.selectors;
       inputSelectors = site.inputSelectors || [];
@@ -22,104 +22,109 @@
   } catch (e) {
     console.warn("[GeekRTL] Could not load sites.json", e);
   }
+  if (!siteSelectors.length && !inputSelectors.length) return;
+
+  let enabled = false; // single source of truth inside the page
 
   // ── Helpers ───────────────────────────────────────────────
-  function isEnabled() {
+  function readEnabled() {
     return new Promise((resolve) => {
-      chrome.storage.sync.get({ geekrtl_enabled: true }, (r) =>
-        resolve(r.geekrtl_enabled)
-      );
+      chrome.storage.sync.get({ geekrtl_enabled: true }, (r) => resolve(r.geekrtl_enabled));
     });
   }
 
   function getRTLRatio(text) {
     const chars = text.replace(/\s/g, "");
     if (!chars.length) return 0;
-    const rtlCount = [...chars].filter((c) => PERSIAN_ARABIC_REGEX.test(c)).length;
-    return rtlCount / chars.length;
+    let rtl = 0;
+    for (const c of chars) if (PERSIAN_ARABIC_REGEX.test(c)) rtl++;
+    return rtl / chars.length;
   }
 
-  function hasPersianArabic(text) {
-    return PERSIAN_ARABIC_REGEX.test(text);
+  function clearElement(el) {
+    el.removeAttribute("dir");
+    el.classList.remove("geekrtl-rtl", "geekrtl-auto");
   }
 
-  // ── Core: fix a single element ────────────────────────────
+  // ── Core: fix one message block ───────────────────────────
+  // Uses textContent (no layout cost) so streaming stays smooth.
   function fixElement(el) {
-    if (el.dataset.geekrtlFixed) return;
+    const text = el.textContent || "";
     el.dataset.geekrtlFixed = "1";
-
-    const text = el.innerText || el.textContent || "";
+    clearElement(el); // a re-fix during streaming starts clean
     if (!text.trim()) return;
 
     const ratio = getRTLRatio(text);
-
     if (ratio >= MIN_RTL_RATIO) {
-      // Mostly RTL content
       el.setAttribute("dir", "rtl");
       el.classList.add("geekrtl-rtl");
-    } else if (hasPersianArabic(text)) {
-      // Mixed content — bidi auto
+    } else if (PERSIAN_ARABIC_REGEX.test(text)) {
       el.setAttribute("dir", "auto");
       el.classList.add("geekrtl-auto");
     }
 
-    // Fix inline children (e.g. <p>, <li>, <span> inside markdown)
-    el.querySelectorAll("p, li, blockquote, h1, h2, h3, h4, h5, h6").forEach((child) => {
-      const childText = child.innerText || child.textContent || "";
+    el.querySelectorAll(CHILD_TAGS).forEach((child) => {
+      const childText = child.textContent || "";
       if (!childText.trim()) return;
-      const childRatio = getRTLRatio(childText);
-      if (childRatio >= MIN_RTL_RATIO) {
-        child.setAttribute("dir", "rtl");
-        child.classList.add("geekrtl-rtl");
-      } else {
-        child.setAttribute("dir", "auto");
-      }
+      child.dataset.geekrtlFixed = "1";
+      child.setAttribute("dir", getRTLRatio(childText) >= MIN_RTL_RATIO ? "rtl" : "auto");
     });
   }
 
-  // ── Input/Textarea RTL fixer ──────────────────────────────
-  function fixInput(el) {
-    el.addEventListener("input", () => {
-      const text = el.value || el.innerText || el.textContent || "";
-      if (!text.trim()) {
-        el.setAttribute("dir", "auto");
-        return;
-      }
-      const ratio = getRTLRatio(text);
-      if (ratio >= MIN_RTL_RATIO) {
-        el.setAttribute("dir", "rtl");
-      } else {
-        el.setAttribute("dir", "ltr");
-      }
+  // Streaming fires many mutations per second: fix each block at most once per frame.
+  const pending = new Set();
+  let frame = 0;
+  function queueFix(el) {
+    pending.add(el);
+    if (frame) return;
+    frame = requestAnimationFrame(() => {
+      frame = 0;
+      const list = [...pending];
+      pending.clear();
+      if (enabled) list.forEach(fixElement);
     });
-    // Set initial dir on attach
-    el.setAttribute("dir", "auto");
   }
 
-  function attachInputFixers() {
-    if (!inputSelectors.length) return;
+  // ── Prompt box: direction follows what you type ───────────
+  const attachedInputs = new WeakSet();
+
+  function onInput(ev) {
+    if (!enabled) return;
+    const el = ev.currentTarget;
+    const text = el.tagName === "TEXTAREA" || el.tagName === "INPUT" ? el.value || "" : el.textContent || "";
+    if (!text.trim()) el.setAttribute("dir", "auto");
+    else el.setAttribute("dir", getRTLRatio(text) >= MIN_RTL_RATIO ? "rtl" : "ltr");
+  }
+
+  function attachInput(el) {
+    el.dataset.geekrtlInput = "1";
+    if (!el.hasAttribute("dir")) el.setAttribute("dir", "auto");
+    if (attachedInputs.has(el)) return; // never add the listener twice
+    attachedInputs.add(el);
+    el.addEventListener("input", onInput);
+  }
+
+  function attachInputs(root = document) {
     inputSelectors.forEach((sel) => {
       try {
-        document.querySelectorAll(sel).forEach((el) => {
-          if (!el.dataset.geekrtlInput) {
-            el.dataset.geekrtlInput = "1";
-            fixInput(el);
-          }
-        });
+        if (root !== document && root.matches?.(sel)) attachInput(root);
+        root.querySelectorAll?.(sel).forEach(attachInput);
       } catch (_) {}
     });
   }
 
-  function removeInputFixes() {
-    document.querySelectorAll("[data-geekrtl-input]").forEach((el) => {
-      el.removeAttribute("dir");
-      delete el.dataset.geekrtlInput;
-    });
+  // ── Scan ──────────────────────────────────────────────────
+  function closestBlock(node) {
+    for (const s of siteSelectors) {
+      try {
+        const hit = node.closest(s);
+        if (hit) return hit;
+      } catch (_) {}
+    }
+    return null;
   }
 
-  // ── Scan all matched elements ─────────────────────────────
   function scanAll() {
-    if (!siteSelectors.length) return;
     siteSelectors.forEach((sel) => {
       try {
         document.querySelectorAll(sel).forEach(fixElement);
@@ -127,103 +132,75 @@
     });
   }
 
-  // ── MutationObserver — watch for new messages ─────────────
+  // ── MutationObserver: new messages and streaming text ─────
   let observer = null;
 
   function startObserver() {
     if (observer) return;
     observer = new MutationObserver((mutations) => {
-      for (const mutation of mutations) {
-        for (const node of mutation.addedNodes) {
+      for (const m of mutations) {
+        for (const node of m.addedNodes) {
           if (node.nodeType !== 1) continue;
-          // Check the node itself
-          if (siteSelectors.some((s) => node.matches?.(s))) fixElement(node);
-          // Check children
           siteSelectors.forEach((sel) => {
             try {
-              node.querySelectorAll?.(sel).forEach(fixElement);
+              if (node.matches(sel)) queueFix(node);
+              node.querySelectorAll(sel).forEach(queueFix);
             } catch (_) {}
           });
-          // Check for new input elements
-          inputSelectors.forEach((sel) => {
-            try {
-              const inputs = node.matches?.(sel) ? [node] : [];
-              const childInputs = node.querySelectorAll?.(sel) || [];
-              [...inputs, ...childInputs].forEach((el) => {
-                if (!el.dataset.geekrtlInput) {
-                  el.dataset.geekrtlInput = "1";
-                  fixInput(el);
-                }
-              });
-            } catch (_) {}
-          });
+          attachInputs(node);
         }
-        // Also re-check changed nodes (streaming text updates)
-        if (mutation.type === "characterData" || mutation.type === "childList") {
-          let target = mutation.target;
-          if (target.nodeType === 3) target = target.parentElement;
-          if (!target) continue;
-          const closest = siteSelectors
-            .map((s) => { try { return target.closest(s); } catch { return null; } })
-            .find(Boolean);
-          if (closest) {
-            delete closest.dataset.geekrtlFixed; // allow re-fix on stream update
-            fixElement(closest);
-          }
-        }
+        let target = m.target;
+        if (target.nodeType === 3) target = target.parentElement;
+        if (!target || target.closest?.("[data-geekrtl-input]")) continue; // typing is handled by onInput
+        const block = closestBlock(target);
+        if (block) queueFix(block);
       }
     });
-
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true,
-      characterData: true,
-    });
+    observer.observe(document.body, { childList: true, subtree: true, characterData: true });
   }
 
   function stopObserver() {
-    if (observer) {
-      observer.disconnect();
-      observer = null;
-    }
+    if (observer) observer.disconnect();
+    observer = null;
+    pending.clear();
   }
 
-  // ── Remove all fixes ──────────────────────────────────────
-  function removeAllFixes() {
+  // ── Turn on / off ─────────────────────────────────────────
+  function turnOn() {
+    enabled = true;
+    scanAll();
+    attachInputs();
+    startObserver();
+  }
+
+  function turnOff() {
+    enabled = false;
+    stopObserver();
     document.querySelectorAll("[data-geekrtl-fixed]").forEach((el) => {
-      el.removeAttribute("dir");
-      el.classList.remove("geekrtl-rtl", "geekrtl-auto");
+      clearElement(el);
       delete el.dataset.geekrtlFixed;
     });
-    document.querySelectorAll(".geekrtl-rtl, .geekrtl-auto").forEach((el) => {
+    document.querySelectorAll("[data-geekrtl-input]").forEach((el) => {
       el.removeAttribute("dir");
-      el.classList.remove("geekrtl-rtl", "geekrtl-auto");
+      delete el.dataset.geekrtlInput;
     });
   }
 
-  // ── Listen for toggle from popup ──────────────────────────
+  // Popup toggle (sent to the active tab) and changes from other tabs/windows
   chrome.runtime.onMessage.addListener((msg) => {
-    if (msg.type === "GEEKRTL_TOGGLE") {
-      if (msg.enabled) {
-        scanAll();
-        attachInputFixers();
-        startObserver();
-      } else {
-        stopObserver();
-        removeAllFixes();
-        removeInputFixes();
-      }
+    if (msg.type === "GEEKRTL_TOGGLE") (msg.enabled ? turnOn : turnOff)();
+  });
+  chrome.storage.onChanged.addListener((changes, area) => {
+    if (area === "sync" && "geekrtl_enabled" in changes) {
+      const on = changes.geekrtl_enabled.newValue;
+      if (on && !enabled) turnOn();
+      else if (!on && enabled) turnOff();
     }
   });
 
   // ── Init ──────────────────────────────────────────────────
-  const enabled = await isEnabled();
-  if (enabled) {
-    // Wait a moment for the page to render initial messages
-    setTimeout(() => {
-      scanAll();
-      attachInputFixers();
-      startObserver();
-    }, 1200);
+  if (await readEnabled()) {
+    // give the page a moment to render the first messages
+    setTimeout(() => { if (!enabled) turnOn(); }, 1200);
   }
 })();

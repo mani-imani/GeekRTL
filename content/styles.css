@@ -1,21 +1,32 @@
-/* GeekRTL — Styles */
+/* GeekRTL v2 · styles injected into supported AI chat pages
+   Fonts are bundled with the extension (fonts/, listed in web_accessible_resources),
+   so Vazirmatn shows even when it is not installed on the computer. */
 
+@font-face { font-family: "GeekRTL Vazirmatn"; src: url("chrome-extension://__MSG_@@extension_id__/fonts/vazirmatn/Vazirmatn-Regular.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "GeekRTL Vazirmatn"; src: url("chrome-extension://__MSG_@@extension_id__/fonts/vazirmatn/Vazirmatn-Medium.woff2") format("woff2"); font-weight: 500; font-display: swap; }
+@font-face { font-family: "GeekRTL Vazirmatn"; src: url("chrome-extension://__MSG_@@extension_id__/fonts/vazirmatn/Vazirmatn-SemiBold.woff2") format("woff2"); font-weight: 600; font-display: swap; }
+@font-face { font-family: "GeekRTL Vazirmatn"; src: url("chrome-extension://__MSG_@@extension_id__/fonts/vazirmatn/Vazirmatn-Bold.woff2") format("woff2"); font-weight: 700; font-display: swap; }
+@font-face { font-family: "GeekRTL Vazirmatn"; src: url("chrome-extension://__MSG_@@extension_id__/fonts/vazirmatn/Vazirmatn-ExtraBold.woff2") format("woff2"); font-weight: 800; font-display: swap; }
+@font-face { font-family: "GeekRTL Mono"; src: url("chrome-extension://__MSG_@@extension_id__/fonts/jetbrains-mono/JetBrainsMono-Regular.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "GeekRTL Mono"; src: url("chrome-extension://__MSG_@@extension_id__/fonts/jetbrains-mono/JetBrainsMono-Medium.woff2") format("woff2"); font-weight: 500; font-display: swap; }
+
+/* Mostly Persian/Arabic block */
 .geekrtl-rtl {
   direction: rtl !important;
   text-align: right !important;
-  font-family: "Vazirmatn", "Tahoma", "Arial", sans-serif !important;
+  font-family: "GeekRTL Vazirmatn", "Vazirmatn", Tahoma, Arial, sans-serif !important;
   line-height: 1.9 !important;
-  unicode-bidi: embed;
+  unicode-bidi: isolate;
 }
 
+/* Mixed block: the dir="auto" attribute decides the direction per paragraph */
 .geekrtl-auto {
-  direction: auto !important;
   unicode-bidi: plaintext;
-  font-family: "Vazirmatn", "Tahoma", "Arial", sans-serif !important;
+  font-family: "GeekRTL Vazirmatn", "Vazirmatn", Tahoma, Arial, sans-serif !important;
   line-height: 1.9 !important;
 }
 
-/* Fix list alignment for RTL */
+/* Lists in RTL blocks */
 .geekrtl-rtl ul,
 .geekrtl-rtl ol {
   padding-right: 1.5em !important;
@@ -27,20 +38,19 @@
   text-align: right !important;
 }
 
-/* Code blocks stay LTR */
+/* Code always stays left-to-right */
 .geekrtl-rtl pre,
 .geekrtl-rtl code,
 .geekrtl-auto pre,
 .geekrtl-auto code {
   direction: ltr !important;
   text-align: left !important;
-  font-family: "Fira Code", "Consolas", monospace !important;
-  unicode-bidi: embed;
+  font-family: "GeekRTL Mono", "JetBrains Mono", Consolas, monospace !important;
+  unicode-bidi: isolate;
 }
 
-/* Mixed inline content */
-.geekrtl-rtl p[dir="ltr"],
-.geekrtl-auto p[dir="ltr"] {
-  direction: ltr !important;
+/* An English paragraph inside a Persian answer */
+.geekrtl-rtl [dir="ltr"],
+.geekrtl-auto [dir="ltr"] {
   text-align: left !important;
 }

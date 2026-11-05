@@ -1,25 +1,34 @@
 {
   "manifest_version": 3,
   "name": "GeekRTL",
-  "version": "1.1.0",
-  "description": "RTL fix for Persian/Arabic text on AI chat platforms — by GeekMani",
-  "author": "GeekMani",
+  "version": "2.0.0",
+  "description": "Right-to-left fix for Persian and Arabic text on AI chat platforms. By GeekMani.",
   "icons": {
-    "16": "icons/icon16.png",
-    "48": "icons/icon48.png",
-    "128": "icons/icon128.png"
+    "16": "icons/geekrtl-icon-16.png",
+    "32": "icons/geekrtl-icon-32.png",
+    "48": "icons/geekrtl-icon-48.png",
+    "128": "icons/geekrtl-icon-128.png"
   },
-  "permissions": ["storage", "activeTab"],
+  "permissions": [
+    "storage",
+    "activeTab"
+  ],
   "action": {
     "default_popup": "popup/popup.html",
     "default_icon": {
-      "16": "icons/icon16.png",
-      "48": "icons/icon48.png"
-    }
+      "16": "icons/geekrtl-icon-16.png",
+      "32": "icons/geekrtl-icon-32.png",
+      "48": "icons/geekrtl-icon-48.png"
+    },
+    "default_title": "GeekRTL"
   },
   "web_accessible_resources": [
     {
-      "resources": ["sites/sites.json"],
+      "resources": [
+        "sites/sites.json",
+        "fonts/vazirmatn/*.woff2",
+        "fonts/jetbrains-mono/*.woff2"
+      ],
       "matches": [
         "https://claude.ai/*",
         "https://chatgpt.com/*",
@@ -42,9 +51,14 @@
         "https://copilot.microsoft.com/*",
         "https://grok.com/*"
       ],
-      "js": ["content/rtl-fixer.js"],
-      "css": ["content/styles.css"],
+      "js": [
+        "content/rtl-fixer.js"
+      ],
+      "css": [
+        "content/styles.css"
+      ],
       "run_at": "document_idle"
     }
-  ]
+  ],
+  "homepage_url": "https://github.com/mani-imani/GeekRTL"
 }

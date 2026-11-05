@@ -1,251 +1,273 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GeekRTL</title>
+  <link rel="stylesheet" href="../css/geek.css">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;700&display=swap');
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    /* ── Popup shell ─────────────────────────────────────────────── */
+    html, body {
+      width: 320px;
+      min-height: 0;
+      margin: 0;
+      background: var(--gm-bg);
+    }
 
     body {
-      width: 300px;
-      background: #0d0d14;
-      color: #e0e0f0;
-      font-family: 'Vazirmatn', Tahoma, sans-serif;
-      direction: rtl;
-      overflow: hidden;
+      padding: var(--gm-space-4);
+      display: flex;
+      flex-direction: column;
+      gap: var(--gm-space-4);
     }
 
-    /* ── Hero Header ── */
-    .hero {
-      position: relative;
-      padding: 22px 20px 18px;
-      background: linear-gradient(160deg, #1a1030 0%, #0f0a20 100%);
-      border-bottom: 1px solid #ffffff0d;
+    /* ── Header ──────────────────────────────────────────────────── */
+    .popup-header {
       display: flex;
       align-items: center;
-      gap: 14px;
-      overflow: hidden;
+      gap: var(--gm-space-3);
     }
 
-    /* glow behind icon */
-    .hero::before {
-      content: '';
-      position: absolute;
-      top: -20px;
-      right: -20px;
-      width: 120px;
-      height: 120px;
-      background: radial-gradient(circle, #7c3aed44 0%, transparent 70%);
-      pointer-events: none;
+    .popup-mark {
+      --gm-mark-size: 40px;
+      flex: none;
     }
 
-    .hero-icon {
-      width: 52px;
-      height: 52px;
-      border-radius: 14px;
-      overflow: hidden;
-      flex-shrink: 0;
-      box-shadow: 0 4px 20px #7c3aed55;
-    }
-
-    .hero-icon img {
+    .popup-mark img {
+      display: block;
       width: 100%;
       height: 100%;
-      object-fit: cover;
     }
 
-    .hero-text {
+    .popup-title-block {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    /* wordmark SVG inline — light/dark via CSS display trick */
+    .popup-wordmark-light { display: block; }
+    .popup-wordmark-dark  { display: none; }
+
+    @media (prefers-color-scheme: dark) {
+      html:not([data-theme="light"]) .popup-wordmark-light { display: none; }
+      html:not([data-theme="light"]) .popup-wordmark-dark  { display: block; }
+    }
+    html[data-theme="dark"] .popup-wordmark-light { display: none; }
+    html[data-theme="dark"] .popup-wordmark-dark  { display: block; }
+
+    .popup-wordmark img {
+      height: 22px;
+      width: auto;
+      display: block;
+    }
+
+    .popup-version {
+      font-family: var(--gm-font-mono);
+      font-size: 11px;
+      color: var(--gm-muted);
+      direction: ltr;
+    }
+
+    /* ── Divider ─────────────────────────────────────────────────── */
+    .popup-divider {
+      height: 1px;
+      background: var(--gm-line);
+      margin: 0 calc(-1 * var(--gm-space-4));
+    }
+
+    /* ── Toggle row ──────────────────────────────────────────────── */
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--gm-space-3);
+    }
+
+    .toggle-label {
       display: flex;
       flex-direction: column;
       gap: 3px;
     }
 
-    .hero-title {
-      font-size: 22px;
-      font-weight: 700;
-      letter-spacing: 0.3px;
-      line-height: 1;
+    .toggle-label-main {
+      font-size: var(--gm-size-sm);
+      font-weight: 600;
+      color: var(--gm-text);
     }
 
-    .hero-title span {
-      color: #a78bfa;
+    .toggle-label-sub {
+      font-size: 12px;
+      color: var(--gm-muted);
+      line-height: 1.5;
     }
 
-    .hero-subtitle {
-      font-size: 11px;
-      color: #cccccc;
-      font-weight: 400;
-      letter-spacing: 0.5px;
+    /* Toggle switch */
+    .toggle-switch {
+      position: relative;
+      flex: none;
+      width: 44px;
+      height: 26px;
     }
 
-    /* ── Toggle Row ── */
-    .toggle-row {
+    .toggle-switch input {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-track {
+      display: block;
+      width: 44px;
+      height: 26px;
+      border-radius: var(--gm-radius-pill);
+      background: var(--gm-line);
+      cursor: pointer;
+      transition: background var(--gm-time-hover) var(--gm-ease);
+      position: relative;
+    }
+
+    .toggle-track::after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      inset-inline-start: 3px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--gm-surface);
+      box-shadow: 0 1px 3px rgba(0,0,0,.2);
+      transition: inset-inline-start var(--gm-time-hover) var(--gm-ease),
+                  background var(--gm-time-hover) var(--gm-ease);
+    }
+
+    input:checked + .toggle-track {
+      background: var(--gm-accent);
+    }
+
+    input:checked + .toggle-track::after {
+      inset-inline-start: calc(44px - 23px);
+    }
+
+    input:focus-visible + .toggle-track {
+      outline: 2px solid var(--gm-accent);
+      outline-offset: 2px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .toggle-track, .toggle-track::after { transition: none; }
+    }
+
+    /* ── Status line ─────────────────────────────────────────────── */
+    .popup-status {
+      display: flex;
+      align-items: center;
+      gap: var(--gm-space-2);
+      padding: var(--gm-space-2) var(--gm-space-3);
+      border-radius: var(--gm-radius-md);
+      background: var(--gm-chip);
+      font-size: 13px;
+      color: var(--gm-muted);
+    }
+
+    .popup-status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--gm-line);
+      flex: none;
+      transition: background var(--gm-time-hover) var(--gm-ease);
+    }
+
+    .popup-status-dot.active {
+      background: var(--gm-signal);
+    }
+
+    .popup-status-text {
+      flex: 1;
+    }
+
+    /* ── Theme switch ─────────────────────────────────────────────── */
+    .theme-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 16px 20px;
-      border-bottom: 1px solid #ffffff08;
+      gap: var(--gm-space-3);
     }
 
-    .toggle-info strong {
-      display: block;
+    .theme-label {
       font-size: 13px;
-      color: #ddd;
-      margin-bottom: 3px;
+      color: var(--gm-muted);
     }
 
-    .toggle-info small {
-      font-size: 11px;
-      color: #cccccc;
-    }
-
-    /* switch */
-    .switch {
-      position: relative;
-      width: 46px;
-      height: 26px;
-      flex-shrink: 0;
-    }
-    .switch input { display: none; }
-    .slider {
-      position: absolute;
-      inset: 0;
-      background: #1e1e30;
-      border-radius: 26px;
-      cursor: pointer;
-      border: 1px solid #ffffff10;
-      transition: background 0.25s, border-color 0.25s;
-    }
-    .slider::before {
-      content: '';
-      position: absolute;
-      width: 20px;
-      height: 20px;
-      right: 2px;
-      top: 2px;
-      background: #3a3a55;
-      border-radius: 50%;
-      transition: transform 0.25s, background 0.25s;
-    }
-    input:checked + .slider {
-      background: #5b21b6;
-      border-color: #7c3aed44;
-    }
-    input:checked + .slider::before {
-      background: #fff;
-      transform: translateX(-20px);
-    }
-
-    /* ── Status ── */
-    .status {
+    /* ── Footer / endorsement ─────────────────────────────────────── */
+    .popup-footer {
       display: flex;
       align-items: center;
-      gap: 7px;
-      padding: 9px 20px;
-      font-size: 11px;
-      color: #5b21b6;
-      border-bottom: 1px solid #ffffff06;
-    }
-    .dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: #22c55e;
-      box-shadow: 0 0 6px #22c55e88;
-      flex-shrink: 0;
-      transition: background 0.3s, box-shadow 0.3s;
-    }
-    .dot.off {
-      background: #2a2a40;
-      box-shadow: none;
-    }
-
-    /* ── Sites ── */
-    .sites {
-      padding: 14px 20px;
-      border-bottom: 1px solid #ffffff06;
-    }
-    .sites-label {
-      font-size: 10px;
-      color: #cccccc;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      margin-bottom: 10px;
-    }
-    .sites-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-    .tag {
-      background: #13131f;
-      border: 1px solid #ffffff0d;
-      border-radius: 6px;
-      padding: 4px 10px;
-      font-size: 11px;
-      color: #7c3aed;
-    }
-
-    /* ── Footer ── */
-    .footer {
-      padding: 10px 20px 14px;
-      display: flex;
       justify-content: center;
+      padding-block-start: var(--gm-space-1);
     }
-    .footer a {
-      font-size: 11px;
-      color: #ddd;
-      text-decoration: none;
-      transition: color 0.2s;
-    }
-    .footer a:hover { color: #7c3aed; }
   </style>
 </head>
 <body>
 
-  <div class="hero">
-    <div class="hero-icon">
-      <img src="../icons/icon128.png" alt="GeekRTL" />
+  <!-- Header -->
+  <header class="popup-header">
+    <div class="gm-mark popup-mark">
+      <img src="../icons/geekrtl-icon.svg" alt="" width="40" height="40">
     </div>
-    <div class="hero-text">
-      <div class="hero-title">Geek<span>RTL</span></div>
-      <div class="hero-subtitle">Persian RTL Fix . by GeekMani</div>
+    <div class="popup-title-block">
+      <div class="popup-wordmark">
+        <span class="popup-wordmark-light">
+          <img src="../icons/geekrtl-wordmark-light.svg" alt="GeekRTL" width="120" height="27">
+        </span>
+        <span class="popup-wordmark-dark">
+          <img src="../icons/geekrtl-wordmark-dark.svg" alt="GeekRTL" width="120" height="27">
+        </span>
+      </div>
+      <span class="popup-version" id="version">v2.0.0</span>
     </div>
-  </div>
+  </header>
 
+  <div class="popup-divider"></div>
+
+  <!-- Toggle -->
   <div class="toggle-row">
-    <div class="toggle-info">
-      <strong>فعال‌سازی افزونه</strong>
-      <small>تصحیح خودکار متن فارسی در AI</small>
+    <div class="toggle-label">
+      <span class="toggle-label-main">تصحیح جهت متن</span>
+      <span class="toggle-label-sub">روی همه‌ی سایت‌های پشتیبانی‌شده</span>
     </div>
-    <label class="switch">
-      <input type="checkbox" id="toggleBtn" />
-      <span class="slider"></span>
+    <label class="toggle-switch" aria-label="تصحیح جهت متن">
+      <input type="checkbox" id="toggleInput">
+      <span class="toggle-track"></span>
     </label>
   </div>
 
-  <div class="status">
-    <span class="dot" id="dot"></span>
-    <span id="statusText">در حال بارگذاری...</span>
+  <!-- Status -->
+  <div class="popup-status" id="statusBar" aria-live="polite">
+    <span class="popup-status-dot" id="statusDot"></span>
+    <span class="popup-status-text" id="statusText">در حال بررسی صفحه…</span>
   </div>
 
-  <div class="sites">
-    <div class="sites-label">پلتفرم‌های پشتیبانی‌شده</div>
-    <div class="sites-grid">
-      <span class="tag">Claude</span>
-      <span class="tag">ChatGPT</span>
-      <span class="tag">DeepSeek</span>
-      <span class="tag">Gemini</span>
-      <span class="tag">Copilot</span>
-      <span class="tag">Grok</span>
+  <div class="popup-divider"></div>
+
+  <!-- Theme switch -->
+  <div class="theme-row">
+    <span class="theme-label">پوسته</span>
+    <div class="gm-seg" id="themeSeg" role="group" aria-label="انتخاب پوسته">
+      <button type="button" data-theme="" aria-pressed="true">سیستم</button>
+      <button type="button" data-theme="light" aria-pressed="false">روشن</button>
+      <button type="button" data-theme="dark" aria-pressed="false">تیره</button>
     </div>
   </div>
 
-  <div class="footer">
-    <a href="https://github.com/mani-imani/GeekRTL" target="_blank">github.com/mani-imani/GeekRTL</a>
-  </div>
+  <!-- Footer -->
+  <footer class="popup-footer">
+    <a class="gm-sign" href="https://github.com/mani-imani" target="_blank" rel="noopener">
+      از گیک‌مانی<i class="gm-cursor"></i>
+    </a>
+  </footer>
 
   <script src="popup.js"></script>
 </body>

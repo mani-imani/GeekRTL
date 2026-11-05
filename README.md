@@ -1,155 +1,60 @@
-<div align="center">
-  <img src="icons/icon128.png" width="100" alt="GeekRTL Logo" />
-  <h1>GeekRTL</h1>
-  <p>RTL fix for Persian & Arabic text on AI chat platforms</p>
-  <p>تصحیح نمایش متن فارسی و عربی در پلتفرم‌های هوش مصنوعی</p>
-  <br/>
-  <img src="https://img.shields.io/badge/Manifest-V3-7c3aed?style=flat-square" />
-  <img src="https://img.shields.io/badge/Chrome-Extension-4285F4?style=flat-square&logo=googlechrome&logoColor=white" />
-  <img src="https://img.shields.io/badge/Made%20by-GeekMani-a855f7?style=flat-square" />
-  <img src="https://img.shields.io/badge/Version-1.1.0-22c55e?style=flat-square" />
-</div>
+<p align="center">
+  <img src="icons/geekrtl-icon-128.png" width="96" height="96" alt="GeekRTL icon">
+</p>
+
+<h1 align="center">GeekRTL</h1>
+
+<p align="center">A Chrome extension that shows Persian and Arabic text right-to-left on AI chat platforms.</p>
+<p align="center" dir="rtl">افزونه‌ی کروم برای نمایش درست و راست‌به‌چپ متن فارسی و عربی در چت‌بات‌های هوش مصنوعی.</p>
 
 ---
 
-## English
+## What it does
+AI chat platforms show Persian and Arabic answers left-to-right, so lines start on the wrong side and mixed Persian–English text gets jumbled. GeekRTL detects Persian and Arabic text in each message and gives it the right direction, alignment and font. Code blocks stay left-to-right. The prompt box also switches direction as you type.
 
-### The Problem
-When chatting in Persian or Arabic on AI platforms like Claude, ChatGPT, or DeepSeek, responses are displayed LTR (left-to-right) — making text hard to read. Mixed Persian/English content gets jumbled with no clear direction.
+**Supported platforms:** Claude · ChatGPT · DeepSeek · Gemini · Microsoft Copilot · Grok
 
-### The Solution
-GeekRTL automatically detects Persian/Arabic text in AI responses and applies proper RTL direction and typography, so everything reads naturally.
+## Install
+GeekRTL is not on the Chrome Web Store yet, so install it in developer mode:
+1. Download this repository (**Code → Download ZIP**) and extract it.
+2. Open `chrome://extensions/` and turn on **Developer mode**.
+3. Click **Load unpacked** and select the `GeekRTL` folder.
 
-### ✅ Supported Platforms
+Step-by-step guide in Persian: [INSTALL.md](INSTALL.md).
 
-| Platform | URL |
-|----------|-----|
-| Claude | claude.ai |
-| ChatGPT | chatgpt.com |
-| DeepSeek | chat.deepseek.com |
-| Gemini | gemini.google.com |
-| Microsoft Copilot | copilot.microsoft.com |
-| Grok | grok.com |
+## Use
+Open one of the supported platforms and write in Persian. The toolbar popup has an on/off switch for all supported sites, shows whether the current page is supported, and has a System / Light / Dark theme switch.
 
-### 🚀 Installation
+## How it works
+- Each message block gets `dir="rtl"` when at least 30% of its letters are Persian or Arabic, and `dir="auto"` when the text is mixed.
+- A `MutationObserver` follows new and streaming messages; updates are batched once per frame.
+- Fonts (Vazirmatn, JetBrains Mono) are bundled, so nothing loads from the internet.
+- Permissions: `storage` (your settings) and `activeTab` (to tell you whether the open page is supported). No data leaves your browser.
 
-1. Clone this repo:
-   ```bash
-   git clone https://github.com/mani-imani/GeekRTL.git
-   ```
-2. Open Chrome → `chrome://extensions/`
-3. Enable **Developer mode** (top right)
-4. Click **Load unpacked** → select the `GeekRTL` folder
-5. Open any AI platform and chat in Persian 🎉
-
-### ⚙️ How It Works
-
-- Scans AI message elements on page load
-- Watches for new messages via `MutationObserver` (works with streaming)
-- Calculates RTL character ratio per message block
-- Applies `dir="rtl"` for mostly-Persian/Arabic content
-- Applies `dir="auto"` for mixed content
-- Code blocks always stay LTR ✓
-- The prompt input box also switches direction in real time as you type (Persian → RTL, English → LTR)
-
-### 🔧 Adding a New Site
-
-Edit `sites/sites.json`:
+## Add a site
+Add an entry to `sites/sites.json`:
 ```json
-{
-  "name": "YourAI",
-  "host": "yourai.com",
-  "selectors": [".message-content"]
-}
+{ "name": "YourAI", "host": "yourai.com", "selectors": [".message"], "inputSelectors": ["textarea"] }
 ```
-Then add the URL to `manifest.json` under `matches`.
+then add `https://yourai.com/*` to both `matches` lists in `manifest.json`.
 
----
-
-## فارسی
-
-### مشکل
-وقتی توی پلتفرم‌های هوش مصنوعی مثل Claude، ChatGPT یا DeepSeek به فارسی چت می‌کنیم، پاسخ‌ها به صورت چپ‌چین (LTR) نمایش داده می‌شن و خوندنشون سخته. متن‌های مخلوط فارسی و انگلیسی هم به هم می‌ریزن.
-
-### راه‌حل
-GeekRTL به صورت خودکار متن فارسی و عربی رو توی پاسخ‌های AI تشخیص میده و جهت RTL و تایپوگرافی مناسب رو اعمال می‌کنه.
-
-### ✅ پلتفرم‌های پشتیبانی‌شده
-
-| پلتفرم | آدرس |
-|--------|------|
-| Claude | claude.ai |
-| ChatGPT | chatgpt.com |
-| DeepSeek | chat.deepseek.com |
-| Gemini | gemini.google.com |
-| Microsoft Copilot | copilot.microsoft.com |
-| Grok | grok.com |
-
-### 🚀 نصب
-
-1. ریپو رو کلون کن:
-   ```bash
-   git clone https://github.com/mani-imani/GeekRTL.git
-   ```
-2. Chrome رو باز کن و برو به `chrome://extensions/`
-3. **Developer mode** رو از گوشه بالا راست فعال کن
-4. روی **Load unpacked** کلیک کن و پوشه `GeekRTL` رو انتخاب کن
-5. یه سایت AI باز کن و به فارسی بنویس 🎉
-
-### ⚙️ نحوه کار
-
-- هنگام لود صفحه، المان‌های پیام رو اسکن می‌کنه
-- با `MutationObserver` منتظر پیام‌های جدید می‌مونه (streaming هم پوشش داده میشه)
-- نسبت کاراکترهای RTL رو در هر بلوک پیام محاسبه می‌کنه
-- اگه بیشتر از ۳۰٪ فارسی/عربی بود → `dir="rtl"` اعمال میشه
-- اگه مخلوط بود → `dir="auto"` اعمال میشه
-- بلوک‌های کد همیشه LTR می‌مونن ✓
-- باکس پرامپت‌نویسی هم به صورت real-time جهتش تغییر می‌کنه (فارسی → راست‌چین، انگلیسی → چپ‌چین)
-
-### 🔧 اضافه کردن سایت جدید
-
-فایل `sites/sites.json` رو ویرایش کن:
-```json
-{
-  "name": "YourAI",
-  "host": "yourai.com",
-  "selectors": [".message-content"]
-}
-```
-بعد آدرس سایت رو توی `manifest.json` زیر `matches` اضافه کن.
-
----
-
-### 📁 ساختار پروژه
-
+## Project structure
 ```
 GeekRTL/
-├── manifest.json          ← تنظیمات اکستنشن (Manifest V3)
+├── manifest.json        Manifest V3
 ├── content/
-│   ├── rtl-fixer.js       ← منطق اصلی تشخیص و تصحیح RTL
-│   └── styles.css         ← استایل‌های RTL + فونت
-├── sites/
-│   └── sites.json         ← سلکتورهای هر سایت (قابل توسعه)
-├── popup/
-│   ├── popup.html         ← UI افزونه
-│   └── popup.js           ← منطق toggle
-└── icons/                 ← آیکون‌های افزونه
+│   ├── rtl-fixer.js     detection and direction fix
+│   └── styles.css       RTL styles and bundled fonts
+├── sites/sites.json     selectors per platform
+├── popup/               popup.html, popup.js
+├── css/geek.css         GeekMani design system (shared by every Geek product)
+├── fonts/               Vazirmatn, JetBrains Mono (OFL)
+└── icons/               icon and wordmark
 ```
 
----
-
-### 📝 Changelog · تاریخچه نسخه‌ها
-
-**v1.1.0** — 2026-06-16
-- EN: Added real-time RTL/LTR detection for the prompt input box (Persian → right-to-left, English → left-to-right)
-- FA: تشخیص real-time راست‌چین/چپ‌چین برای باکس پرامپت‌نویسی اضافه شد (فارسی → راست‌چین، انگلیسی → چپ‌چین)
-
-**v1.0.0** — 2026-06-14
-- EN: Initial release — automatic RTL fix for AI responses on Claude, ChatGPT, DeepSeek, Gemini, Copilot, and Grok
-- FA: انتشار نسخه اول — تصحیح خودکار RTL برای پاسخ‌های AI در Claude، ChatGPT، DeepSeek، Gemini، Copilot و Grok
+## Version
+`v2.0.0` · see [CHANGELOG.md](CHANGELOG.md).
 
 ---
 
-<div align="center">
-  Made with ❤️ by <a href="https://github.com/mani-imani">GeekMani</a>
-</div>
+<p align="center"><a href="https://github.com/mani-imani"><b>by GeekMani</b></a> · <a href="https://maniimani.ir">maniimani.ir</a></p>
